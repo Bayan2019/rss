@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/Bayan2019/rss/internal/config"
+
+	_ "github.com/lib/pq"
 )
 
 // Create a state struct that holds a pointer to a config
