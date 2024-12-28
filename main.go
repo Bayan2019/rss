@@ -56,6 +56,8 @@ func main() {
 	cmds.register("register", handlerRegister)
 	// Add a new command called reset that calls the query.
 	cmds.register("reset", handlerReset)
+	// Add a new command called users
+	cmds.register("users", handlerUsers)
 
 	// Use os.Args to get the command-line arguments passed in by the user.
 	if len(os.Args) < 2 {
