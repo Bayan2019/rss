@@ -51,8 +51,8 @@ func Read() (Config, error) {
 
 func getConfigFilePath() (string, error) {
 	// use os.UserHomeDir to get the location of HOME
-	// home, err := os.UserHomeDir()
-	home, err := os.Getwd()
+	home, err := os.UserHomeDir()
+	// home, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
