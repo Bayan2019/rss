@@ -30,6 +30,11 @@ func main() {
 	// load in your database URL to the config struct and
 	// sql.Open() a connection to your database
 	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatalf("error connecting to db: %v", err)
+	}
+	defer db.Close()
+
 	// Use your generated database package to create a new *database.Queries
 	dbQueries := database.New(db)
 

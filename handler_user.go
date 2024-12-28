@@ -41,7 +41,8 @@ func handlerRegister(s *state, cmd command) error {
 	}
 
 	// Print a message to the terminal that the user has been set.
-	fmt.Printf("User created successfully! User - %v\n", user)
+	fmt.Println("User created successfully!")
+	printUser(user)
 	return nil
 }
 
@@ -57,7 +58,7 @@ func handlerLogin(s *state, cmd command) error {
 	// if the given username doesn't exist in the database.
 	_, err := s.db.GetUser(context.Background(), name)
 	if err != nil {
-		return fmt.Errorf("User doesn't exist")
+		return fmt.Errorf("couldn't find user: %w", err)
 	}
 
 	// Use the state's access to the config struct
@@ -70,4 +71,9 @@ func handlerLogin(s *state, cmd command) error {
 	// Print a message to the terminal that the user has been set.
 	fmt.Println("User switched successfully!")
 	return nil
+}
+
+func printUser(user database.User) {
+	fmt.Printf(" * ID:      %v\n", user.ID)
+	fmt.Printf(" * Name:    %v\n", user.Name)
 }
