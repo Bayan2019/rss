@@ -58,6 +58,7 @@ func main() {
 	cmds.register("reset", handlerReset)
 	// Add a new command called users
 	cmds.register("users", handlerUsers)
+	cmds.register("agg", handlerAgg)
 
 	// Use os.Args to get the command-line arguments passed in by the user.
 	if len(os.Args) < 2 {
