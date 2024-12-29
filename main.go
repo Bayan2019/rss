@@ -62,7 +62,9 @@ func main() {
 	cmds.register("addfeed", handlerAddFeed)
 	cmds.register("feeds", handlerListFeeds)
 	// Add a follow command.
-	cmds.register("follow", handlerCreateFeedFollow)
+	cmds.register("follow", handlerAddFeedFollow)
+	// Add a following command.
+	cmds.register("following", handlerListFeedsFollowing)
 
 	// Use os.Args to get the command-line arguments passed in by the user.
 	if len(os.Args) < 2 {

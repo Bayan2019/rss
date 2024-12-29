@@ -115,7 +115,17 @@ func handlerAddFeedFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFeedFollowing(s *state, cmd command) error {
+func handlerListFeedsFollowing(s *state, cmd command) error {
+	ans, err := s.db.GetFeedFollowsForUser(context.Background(), s.cfg.CurrentUserName)
+	if err != nil {
+		return nil
+	}
+
+	fmt.Println("=====================================")
+	for _, a := range ans {
+		fmt.Printf("* Feed Name:          %s\n", a.FeedName)
+	}
+	fmt.Println("=====================================")
 	return nil
 }
 
