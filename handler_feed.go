@@ -76,6 +76,10 @@ func handlerListFeeds(s *state, cmd command) error {
 	return nil
 }
 
+func handlerCreateFeedFollow(s *state, cmd command) error {
+	return nil
+}
+
 func printFeed(feed database.Feed) {
 	fmt.Printf("* ID:            %s\n", feed.ID)
 	fmt.Printf("* Created:       %v\n", feed.CreatedAt)
