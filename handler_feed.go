@@ -87,7 +87,7 @@ func handlerListFeeds(s *state, cmd command) error {
 	return nil
 }
 
-func handlerCreateFeedFollow(s *state, cmd command) error {
+func handlerAddFeedFollow(s *state, cmd command) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <name>", cmd.Name)
 	}
@@ -112,6 +112,10 @@ func handlerCreateFeedFollow(s *state, cmd command) error {
 	fmt.Printf("* Current User Name:           %s\n", ans.UserName)
 	fmt.Println("=====================================")
 
+	return nil
+}
+
+func handlerFeedFollowing(s *state, cmd command) error {
 	return nil
 }
 

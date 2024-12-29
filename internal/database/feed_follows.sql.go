@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -75,23 +76,23 @@ func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowPara
 const getFeedFollowsForUser = `-- name: GetFeedFollowsForUser :many
 SELECT ff.id, ff.created_at, ff.updated_at, ff.user_id, ff.feed_id, feeds.name AS feed_name, users.name AS user_name
 FROM feed_follows AS ff 
-INNER JOIN feeds ON ff.feed_id = feeds.id
-INNER JOIN users ON ff.user_id = users.id
-WHERE ff.user_id = $1
+FULL JOIN feeds ON ff.feed_id = feeds.id
+FULL JOIN users ON ff.user_id = users.id
+WHERE users.name = $1
 `
 
 type GetFeedFollowsForUserRow struct {
-	ID        uuid.UUID
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	UserID    uuid.UUID
-	FeedID    uuid.UUID
-	FeedName  string
-	UserName  string
+	ID        uuid.NullUUID
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	UserID    uuid.NullUUID
+	FeedID    uuid.NullUUID
+	FeedName  sql.NullString
+	UserName  sql.NullString
 }
 
-func (q *Queries) GetFeedFollowsForUser(ctx context.Context, userID uuid.UUID) ([]GetFeedFollowsForUserRow, error) {
-	rows, err := q.db.QueryContext(ctx, getFeedFollowsForUser, userID)
+func (q *Queries) GetFeedFollowsForUser(ctx context.Context, name string) ([]GetFeedFollowsForUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFeedFollowsForUser, name)
 	if err != nil {
 		return nil, err
 	}
