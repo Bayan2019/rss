@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -59,12 +60,12 @@ func main() {
 	// Add a new command called users
 	cmds.register("users", handlerUsers)
 	cmds.register("agg", handlerAgg)
-	cmds.register("addfeed", handlerAddFeed)
+	cmds.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	cmds.register("feeds", handlerListFeeds)
 	// Add a follow command.
-	cmds.register("follow", handlerAddFeedFollow)
+	cmds.register("follow", middlewareLoggedIn(handlerAddFeedFollow))
 	// Add a following command.
-	cmds.register("following", handlerListFeedsFollowing)
+	cmds.register("following", middlewareLoggedIn(handlerListFeedsFollowing))
 
 	// Use os.Args to get the command-line arguments passed in by the user.
 	if len(os.Args) < 2 {
@@ -84,5 +85,17 @@ func main() {
 	err = cmds.run(programState, command{Name: cmdName, Args: cmdArgs})
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+// Create logged-in middleware.
+func middlewareLoggedIn(handler func(s *state, cmd command, currentUser database.User) error) func(*state, command) error {
+	return func(s *state, cmd command) error {
+		currentUser, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+		if err != nil {
+			return err
+		}
+
+		return handler(s, cmd, currentUser)
 	}
 }
