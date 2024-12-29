@@ -77,6 +77,30 @@ func handlerListFeeds(s *state, cmd command) error {
 }
 
 func handlerCreateFeedFollow(s *state, cmd command) error {
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("usage: %s <name>", cmd.Name)
+	}
+	// It takes a single url argument
+	url := cmd.Args[0]
+	feed, err := s.db.GetFeedByUrl(context.Background(), url)
+	currentUser, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	ans, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		FeedID:    feed.ID,
+		UserID:    currentUser.ID,
+	})
+
+	fmt.Println("=====================================")
+	fmt.Printf("* Feed Name:          %s\n", ans.FeedName)
+	fmt.Printf("* Current User Name:           %s\n", ans.UserName)
+	fmt.Println("=====================================")
+
 	return nil
 }
 
