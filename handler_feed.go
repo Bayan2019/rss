@@ -18,7 +18,7 @@ func handlerAgg(s *state, cmd command) error {
 	return nil
 }
 
-func handlerAddFedd(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command) error {
 	// If the command's arg's slice is empty, return an error;
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("usage: %s <name>", cmd.Name)
@@ -51,6 +51,25 @@ func handlerAddFedd(s *state, cmd command) error {
 	return nil
 }
 
+func handlerListFeeds(s *state, cmd command) error {
+	feeds, err := s.db.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("=====================================")
+	for _, feed := range feeds {
+		user, err := s.db.GetUserById(context.Background(), feed.UserID)
+		if err != nil {
+			return err
+		}
+		printFeedInList(feed, user.Name)
+	}
+	fmt.Println("=====================================")
+
+	return nil
+}
+
 func printFeed(feed database.Feed) {
 	fmt.Printf("* ID:            %s\n", feed.ID)
 	fmt.Printf("* Created:       %v\n", feed.CreatedAt)
@@ -58,4 +77,10 @@ func printFeed(feed database.Feed) {
 	fmt.Printf("* Name:          %s\n", feed.Name)
 	fmt.Printf("* URL:           %s\n", feed.Url)
 	fmt.Printf("* UserID:        %s\n", feed.UserID)
+}
+
+func printFeedInList(feed database.Feed, userName string) {
+	fmt.Printf("* Name:          %s\n", feed.Name)
+	fmt.Printf("* URL:           %s\n", feed.Url)
+	fmt.Printf("* UserName:        %s\n", userName)
 }
