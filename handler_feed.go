@@ -109,7 +109,7 @@ func handlerAddFeedFollow(s *state, cmd command, currentUser database.User) erro
 	return nil
 }
 
-func handlerListFeedsFollowing(s *state, cmd command, currentUser database.User) error {
+func handlerListFeedsFollow(s *state, cmd command, currentUser database.User) error {
 	ans, err := s.db.GetFeedFollowsForUser(context.Background(), currentUser.Name)
 	if err != nil {
 		return nil
@@ -120,6 +120,28 @@ func handlerListFeedsFollowing(s *state, cmd command, currentUser database.User)
 		fmt.Printf("* Feed Name:          %s\n", a.FeedName)
 	}
 	fmt.Println("=====================================")
+	return nil
+}
+
+func handlerDeleteFeedFollow(s *state, cmd command, currentUser database.User) error {
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("usage: %s <name>", cmd.Name)
+	}
+	url := cmd.Args[0]
+
+	feed, err := s.db.GetFeedByUrl(context.Background(), url)
+	if err != nil {
+		return err
+	}
+
+	err = s.db.DeleteFollowFeed(context.Background(), database.DeleteFollowFeedParams{
+		UserID: currentUser.ID,
+		FeedID: feed.ID,
+	})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
