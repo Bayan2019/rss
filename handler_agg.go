@@ -21,8 +21,11 @@ func handlerAgg(s *state, cmd command) error {
 		return fmt.Errorf("invalid duration: %w", err)
 	}
 
+	// It should print a message like Collecting feeds every 1m0s when it starts
 	log.Printf("Collecting feeds every %s...", timeBetweenRequests)
 
+	// Use a time.Ticker to run your scrapeFeeds function
+	// once every time_between_reqs
 	ticker := time.NewTicker(timeBetweenRequests)
 
 	for ; ; <-ticker.C {
