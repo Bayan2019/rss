@@ -68,6 +68,8 @@ func main() {
 	cmds.register("following", middlewareLoggedIn(handlerListFeedsFollow))
 	// Add a new unfollow command
 	cmds.register("unfollow", middlewareLoggedIn(handlerDeleteFeedFollow))
+	// Add the browse command.
+	cmds.register("browse", middlewareLoggedIn(handlerBrowse))
 
 	// Use os.Args to get the command-line arguments passed in by the user.
 	if len(os.Args) < 2 {
