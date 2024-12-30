@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/Bayan2019/rss/internal/database"
+	"github.com/google/uuid"
 )
 
 func handlerAgg(s *state, cmd command) error {
@@ -63,8 +66,43 @@ func scrapeFeed(db *database.Queries, feed database.Feed) {
 
 	// Iterate over the items in the feed
 	for _, item := range feedData.Channel.Item {
-		// and print their titles to the console.
-		fmt.Printf("Found post: %s\n", item.Title)
+		// Make sure that you're parsing the "published at" time properly from the feeds.
+		// Sometimes they might be in a different format than you expect,
+		// so you might need to handle that.
+		publishedAt := sql.NullTime{}
+		if t, err := time.Parse(time.RFC1123Z, item.PubDate); err == nil {
+			// You may have to manually convert the data into database/sql types
+			publishedAt = sql.NullTime{
+				Time:  t,
+				Valid: true,
+			}
+		}
+
+		// Update your scraper to save posts
+		_, err = db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:        uuid.New(),
+			CreatedAt: time.Now().UTC(),
+			UpdatedAt: time.Now().UTC(),
+			FeedID:    feed.ID,
+			Title:     item.Title,
+			Description: sql.NullString{
+				String: item.Description,
+				Valid:  true,
+			},
+			Url:         item.Link,
+			PublishedAt: publishedAt,
+		})
+		if err != nil {
+			// If you encounter an error where the post with that URL already exists,
+			if strings.Contains(err.Error(), "duplicate key value violates unique constraint") {
+				// just ignore it.
+				// That will happen a lot.
+				continue
+			}
+			// If it's a different error, you should probably log it.
+			log.Printf("Couldn't create post: %v", err)
+			continue
+		}
 	}
 	log.Printf("Feed %s collected, %v posts found", feed.Name, len(feedData.Channel.Item))
 }
